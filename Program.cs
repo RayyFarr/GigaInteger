@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GigaInteger
 {
@@ -11,13 +10,44 @@ namespace GigaInteger
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Write the first input: ");
-            GigaInt n1 = Console.ReadLine();
+            /*            Console.WriteLine("Write the first input: ");
+                        GigaInt n1 = Console.ReadLine();
 
-            Console.WriteLine("Write the second input: ");    
-            GigaInt n2 = Console.ReadLine();
+                        Console.WriteLine("Write the second input: ");
+                        GigaInt n2 = Console.ReadLine();
 
-            Console.WriteLine("Sum: " + (n1 + n2).ToString());
+                        Console.WriteLine("Sum: " + (n1 + n2).ToString());
+            */
+
+            Console.WriteLine("Press any key to start addition test");
+            Console.ReadKey();
+
+
+            Console.WriteLine("Testing....");
+
+            bool testPassed = true;
+            int progress = 0;
+            for (int i = 0; i < BigInteger.Parse("10000000"); i++)
+            {
+                BigInteger a = i;
+                BigInteger b = i;
+
+                GigaInt ag = i;
+                GigaInt bg = i;
+
+                if (a + b != Convert.ToInt32((ag + bg).ToString()))
+                {
+                    testPassed = false;
+                    Console.WriteLine($"WRONG OUTPUT. i = {i}. i + i = {a + b}. GigaInt returned {ag + bg}");
+                }
+
+                if (progress % 100000 == 0) Console.WriteLine(progress + " tests done.");
+                progress++;
+
+
+
+            }
+            Console.WriteLine($"{(testPassed ? "All tests passed" : "Some or all tests failed")}");
 
         }
     }
@@ -25,37 +55,19 @@ namespace GigaInteger
     public class GigaInt
     {
         public readonly string value;
-        public readonly int[] digits;
 
         #region Constructors
-        private GigaInt(string value)
-        {
-            this.value = value;
-            digits = StringToDigits(value);
-        }
-        private GigaInt(int value)
-        {
-            this.value = value.ToString();
-            digits = StringToDigits(value.ToString());
-        }
-        private GigaInt(long value)
-        {         
-            this.value = value.ToString();
-            digits = StringToDigits(value.ToString());
-        }
+        private GigaInt(string value) => this.value = value;
 
-        private GigaInt(int[] digits)
-        {
-            this.digits = digits;
-            string v = "";
-            foreach (int digit in digits) v += digit.ToString();
-        }
+        private GigaInt(int value) => this.value = value.ToString();
+
+        private GigaInt(long value) => this.value = value.ToString();
 
         public int[] StringToDigits(string value)
         {
 
             int[] digits = new int[value.Length];
-            for (int i = 0; i < value.Length; i++)          
+            for (int i = 0; i < value.Length; i++)
                 digits[i] = int.Parse(value[i].ToString());
 
             return digits;
@@ -68,35 +80,73 @@ namespace GigaInteger
         public static implicit operator GigaInt(int value) => new GigaInt(value);
         public static implicit operator GigaInt(long value) => new GigaInt(value);
         public static implicit operator GigaInt(string value) => new GigaInt(value);
-
-
         #endregion
 
 
         #region Operations
 
         //Will implement the operators later. These are placeholders
+
+
+        /// <summary>
+        /// Adds two specified GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>The sum of left and right</returns>
         public static GigaInt operator +(GigaInt a, GigaInt b)
         {
-            string result = "";
+            StringBuilder result = new StringBuilder();
 
             bool carry = false;
 
-            for(int i = Math.Max(a.digits.Length,b.digits.Length)-1;i>=0;i--)
+            for (int i = 0; i < Math.Max(a.value.Length, b.value.Length); i++)
             {
-                int r = (i<a.digits.Length?a.digits[i]:0) + (i<b.digits.Length?b.digits[i]:0) + (carry?1:0);
-                result = r%10==0?"0":(r % 10).ToString() + result;
-                if (r >= 10)
-                {
-                    carry = true;
-                }
-            }
+                int r
+                    = (i < a.value.Length ? a.value[a.value.Length - 1 - i] - '0' : 0)
+                    + (i < b.value.Length ? b.value[b.value.Length - 1 - i] - '0' : 0)
+                    + (carry ? 1 : 0);
 
-            return new GigaInt((carry?"1":"") + result);
+                result.Append(r%10);
+               
+                carry = r >= 10;
+            }
+            if(carry)result.Append("1");    
+            char[] chars = result.ToString().ToCharArray();
+            Array.Reverse(chars);
+            return new GigaInt(new string(chars));
         }
+
+        /// <summary>
+        /// Negates two specified GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Negation of right from left</returns>
         public static GigaInt operator -(GigaInt a, GigaInt b) => a.value + b.value;
+
+        /// <summary>
+        /// Multiplies two specified GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Multiplication of left and right</returns>
         public static GigaInt operator *(GigaInt a, GigaInt b) => a.value + b.value;
+
+        /// <summary>
+        /// Divides two specified GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Left divided by right</returns>
         public static GigaInt operator /(GigaInt a, GigaInt b) => a.value + b.value;
+
+        /// <summary>
+        /// Raises a GigaInt to the power of another GigaInt.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Left raised to the power of right</returns>
         public static GigaInt operator ^(GigaInt a, GigaInt b) => a.value + b.value;
 
         #endregion
