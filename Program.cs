@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http.Headers;
-using System.Numerics;
 using System.Text;
 
 namespace GigaInteger
@@ -11,48 +8,60 @@ namespace GigaInteger
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(new GigaInt(1)>new GigaInt(4));
-            Console.WriteLine("Write the first input: ");
-            GigaInt n1 = Console.ReadLine();
+            bool DoHandTest = false;
 
-            Console.WriteLine("Write the second input: ");
-            GigaInt n2 = Console.ReadLine();
-
-            Console.WriteLine($"({n1})-({n2})={n1-n2}");
-
-            Main(args);
-            /*
-            Console.WriteLine("Press any key to start addition test");
-            Console.ReadKey();
-
-
-            Console.WriteLine("Testing....");
-
-            bool testPassed = true;
-            int progress = 0;
-            for (int i = 0; i < 10; i++)
+            if (DoHandTest)
             {
-                BigInteger a = i;
-                BigInteger b = i;
+                Console.WriteLine("Write the first input: ");
+                GigaInt n1 = Console.ReadLine();
 
-                GigaInt ag = i;
-                GigaInt bg = i;
+                Console.WriteLine("Write the second input: ");
+                GigaInt n2 = Console.ReadLine();
 
-                GigaInt e = ag + (-bg);
-              
-                if (a + b != Convert.ToInt32((ag + bg).ToString()))
-                {
-                    testPassed = false;
-                    Console.WriteLine($"WRONG OUTPUT. i = {i}. i + i = {a + b}. GigaInt returned {ag + bg}");
-                }
+                Console.WriteLine($"({n1})+({n2})={n1 + n2}");
 
-                if (progress % 100000 == 0) Console.WriteLine(progress + " tests done.");
-                progress++;
-
-
-
+                Main(args);
             }
-            Console.WriteLine($"{(testPassed ? "All tests passed" : "Some or all tests failed")}");*/
+
+            if (!DoHandTest)
+            {
+                Console.WriteLine("Press any key to start addition test");
+                Console.ReadKey();
+
+
+                Console.WriteLine("Testing....");
+
+                int progress = 0;
+                int passed = 0;
+                int failed = 0;
+                for (int i = -100; i < 100; i++)
+                {
+                    for (int j = -100; j < 100; j++)
+                    {
+                        int a = i;
+                        int b = j;
+
+                        int iResult = a + (-b);
+
+                        GigaInt ag = i;
+                        GigaInt bg = j;
+
+                        GigaInt gResult = ag + (-bg);
+
+                        if (progress % 1000 == 0) Console.WriteLine(progress + " tests done.");
+                        progress++;
+
+                       
+                        if (new GigaInt(iResult) != gResult)
+                        {
+                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i + j = {iResult}. GigaInt returned {gResult}");
+                            failed++;
+                        }
+                        else passed++;
+                    }
+                }
+                Console.WriteLine($"Test Count: {progress} | Passed: {passed} | Failed : {failed}");
+            }
         }
 
     }
@@ -61,7 +70,10 @@ namespace GigaInteger
 
         #region Variables
         private string Value { get; set; }
-        private short Sign { get; set; }
+        public short Sign { get; set; }
+
+        public const int NEGATIVE = -1;
+        public const int POSITIVE = 1;
         #endregion
 
 
@@ -69,16 +81,27 @@ namespace GigaInteger
         #region Constructors
         public GigaInt(string Value)
         {
+            
+           
             if (Value.First() == '-')
             {
-                Sign = -1;
-                this.Value = Value == "-0" || Value == "-"?"0":Value.Substring(1).TrimStart('0');
+                if(Value == "-0" || Value == "-")
+                {
+                    this.Value = "0";
+                    Sign = 1;
+                }
+                else
+                {
+                    Sign = -1;
+                    this.Value = Value.Substring(1).TrimStart('0');
+                }
             }
             else
             {
                 Sign = 1;
-                this.Value = Value == "0"?"0" : Value.TrimStart('0');
+                this.Value = Value == "0" ? "0" : Value.TrimStart('0');
             }
+            if (this.Value == "") this.Value = "0";
         }
 
         public GigaInt(int Value) : this(Value.ToString()) { }
@@ -117,14 +140,7 @@ namespace GigaInteger
         /// <param name="a">Left</param>
         /// <param name="b">Right</param>
         /// <returns>The sum of left and right</returns>
-        public static GigaInt operator +(GigaInt a, GigaInt b)
-        {
-            if (a.Sign == 1 && b.Sign == 1) return Add(a.Value, b.Value);
-            else if (a.Sign == -1 && b.Sign == -1) return '-' + Add(a.Value, b.Value).ToString();
-            else if (a.Sign == 1 && b.Sign == -1) return Negate(a.Value, b.Value);
-            else if (a.Sign == -1 && b.Sign == 1) return Negate(b.Value, a.Value);
-            else return Add(a.Value, b.Value);
-        }
+        public static GigaInt operator +(GigaInt a, GigaInt b) => Add(a, b);
 
 
 
@@ -143,13 +159,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Negation of right from left</returns>
-        public static GigaInt operator -(GigaInt a, GigaInt b)
-        {
-            if (a.Sign == 1 && b.Sign == 1) return Negate(a.Value, b.Value);
-            else if (a.Sign == -1 && b.Sign == 1) return "-" + Add(a.Value, b.Value).Value;
-            else if (a.Sign == 1 && b.Sign == -1) return Add(a.Value,  b.Value);
-            else return Negate(b.Value,a.Value);
-        }
+        public static GigaInt operator -(GigaInt a, GigaInt b) => Subtract(a, b);
 
 
 
@@ -160,7 +170,7 @@ namespace GigaInteger
         /// </summary>
         /// <param name="a">The GigaInt to negate.</param>
         /// <returns>A new GigaInt that is the negation of the input GigaInt.</returns>
-        public static GigaInt operator -(GigaInt a) => a.Value.First() == '-' ? a.Value.Replace("-", "") : '-' + a.Value;
+        public static GigaInt operator -(GigaInt a) => a.Sign == -1 ? a.Value : "-" + a.Value;
 
 
 
@@ -276,81 +286,112 @@ namespace GigaInteger
         /// <returns>right added to left</returns>
         private static GigaInt Add(GigaInt a, GigaInt b)
         {
-            StringBuilder result = new StringBuilder();
+            //Checks if any of the values have a sign associated with it then it adds or subtracts the absolute value
+            //Depending on the signs.
 
-            bool carry = false;
+            //Standard format a+b.
 
-            for (int i = 0; i < Math.Max(a.Value.Length, b.Value.Length); i++)
+            //when (a>0,b<0) => |a|-|b|
+            if (a.Sign is POSITIVE && b.Sign is NEGATIVE) return Subtract(a.Value, b.Value);
+            //(a < 0,b > 0)  => |b|-|a|
+            else if (a.Sign is NEGATIVE && b.Sign is POSITIVE) return Subtract(b.Value, a.Value);
+            //(a < 0,b < 0)  => -(|a| + |b|)
+            else if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return "-" + Add(a.Value, b.Value).ToString();
+            //(a > 0, b > 0) => |a| + |b|
+            else
             {
-                int r
-                    = (i < a.Value.Length ? a.Value[a.Value.Length - 1 - i] - '0' : 0)
-                    + (i < b.Value.Length ? b.Value[b.Value.Length - 1 - i] - '0' : 0)
-                    + (carry ? 1 : 0);
+                StringBuilder result = new StringBuilder();
 
-                result.Append(r % 10);
+                bool carry = false;
 
-                carry = r >= 10;
+                for (int i = 0; i < Math.Max(a.Value.Length, b.Value.Length); i++)
+                {
+                    int r
+                        = (i < a.Value.Length ? a.Value[a.Value.Length - 1 - i] - '0' : 0)
+                        + (i < b.Value.Length ? b.Value[b.Value.Length - 1 - i] - '0' : 0)
+                        + (carry ? 1 : 0);
+
+                    result.Append(r % 10);
+
+                    carry = r >= 10;
+                }
+                if (carry) result.Append("1");
+                char[] chars = result.ToString().ToCharArray();
+                Array.Reverse(chars);
+                return new GigaInt(new string(chars));
             }
-            if (carry) result.Append("1");
-            char[] chars = result.ToString().ToCharArray();
-            Array.Reverse(chars);
-            return new GigaInt(new string(chars));
         }
 
         /// <summary>
-        /// Negates a GigaInt value from a GigaInt value.
+        /// Subtracts a GigaInt value from a GigaInt value.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        /// <returns>left negated by right</returns>
-        private static GigaInt Negate(GigaInt a, GigaInt b)
+        /// <returns>Right subtracted from Left</returns>
+        private static GigaInt Subtract(GigaInt a, GigaInt b)
         {
-            StringBuilder result = new StringBuilder();
+            //Handles a-b.
+            //a.value gives absolute.
 
-            int carry = 0;
-            bool isNegative = false;
-
-            if (b > a)
+            //for (a>0,b<0) =>  |a| + |b|
+            if (a.Sign is POSITIVE && b.Sign is NEGATIVE) return Add(a.Value, b.Value);
+            //(a < 0,b > 0) =>  -(|a| + |b|)
+            else if (a.Sign is NEGATIVE && b.Sign is POSITIVE) return '-' + Add(a.Value, b.Value).ToString();
+            //(a<0,b<0) => |b| - |a|
+            else if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Subtract(b.Value, a.Value);
+            //(a>0,b>0) => |a| - |b|
+            else
             {
-                GigaInt temp = a;
-                a = b;
-                b = temp;
-                isNegative = true;
-            }
+                StringBuilder result = new StringBuilder();
 
-            for (int i = 0; i < Math.Max(a.Value.Length, b.Value.Length); i++)
-            {
-                int r;
+                int carry = 0;
+                bool isNegative = false;
 
-                int aV = i < a.Value.Length ? a.Value[a.Value.Length - 1 - i] - '0' : 0;
-                int bV = i < b.Value.Length ? b.Value[b.Value.Length - 1 - i] - '0' : 0;
-
-                if (aV >= bV + carry)
+                if (b > a)
                 {
-                    r = aV - (bV + carry);
-                    carry = 0;
-                }
-                else
-                {
-                    r = (aV + 10) - (bV + carry);
-                    carry = 1;
+                    GigaInt temp = a;
+                    a = b;
+                    b = temp;
+                    isNegative = true;
                 }
 
-                result.Append(r % 10);
+                for (int i = 0; i < Math.Max(a.Value.Length, b.Value.Length); i++)
+                {
+                    int r;
+
+                    int aV = i < a.Value.Length ? a.Value[a.Value.Length - 1 - i] - '0' : 0;
+                    int bV = i < b.Value.Length ? b.Value[b.Value.Length - 1 - i] - '0' : 0;
+
+                    if (aV >= bV + carry)
+                    {
+                        r = aV - (bV + carry);
+                        carry = 0;
+                    }
+                    else
+                    {
+                        r = (aV + 10) - (bV + carry);
+                        carry = 1;
+                    }
+
+                    result.Append(r % 10);
+                }
+
+                char[] chars = result.ToString().ToCharArray();
+                Array.Reverse(chars);
+
+                return new GigaInt((isNegative ? "-" : "") + new string(chars));
             }
-
-            char[] chars = result.ToString().ToCharArray();
-            Array.Reverse(chars);
-
-            return new GigaInt((isNegative ? "-" : "") + new string(chars));
         }
-            #endregion
+        #endregion
 
 
 
         #region Special Methods
 
-            string StringSign => Sign == -1 ? "-" : "";
+        public string StringSign => Sign == -1 ? "-" : "";
+        public int intSign => Sign;
+
+        public string AbsoluteValue => Value;
 
         public override bool Equals(object obj)
         {
@@ -369,7 +410,7 @@ namespace GigaInteger
 
 
         #region Misc
-        public override string ToString() => StringSign + (Value == ""?"0":Value);
+        public override string ToString() => StringSign + (Value == "" ? "0" : Value);
         #endregion
     }
 }
