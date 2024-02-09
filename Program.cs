@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace GigaInteger
@@ -8,21 +9,22 @@ namespace GigaInteger
     {
         static void Main(string[] args)
         {
-            bool DoHandTest = false;
+            bool DoHandTest = true;
 
             if (DoHandTest)
             {
                 Console.WriteLine("Write the first input: ");
                 GigaInt n1 = Console.ReadLine();
-
+                BigInteger in1 = BigInteger.Parse(n1.ToString());
                 Console.WriteLine("Write the second input: ");
                 GigaInt n2 = Console.ReadLine();
+                BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"({n1})+({n2})={n1 + n2}");
+                Console.WriteLine($"BigInteger   : ({in1})*({in2})={in1*in2}");
+                Console.WriteLine($"GigaInt      : ({n1})*({n2})={n1 * n2}");
 
                 Main(args);
             }
-
             if (!DoHandTest)
             {
                 Console.WriteLine("Press any key to start addition test");
@@ -34,27 +36,29 @@ namespace GigaInteger
                 int progress = 0;
                 int passed = 0;
                 int failed = 0;
-                for (int i = -100; i < 100; i++)
+                for (int i = -1000; i < 1000; i++)
                 {
-                    for (int j = -100; j < 100; j++)
+                    for (int j = -1000; j < 1000; j++)
                     {
                         int a = i;
                         int b = j;
 
-                        int iResult = a + (-b);
+                        int iResult = a * b;
 
                         GigaInt ag = i;
                         GigaInt bg = j;
 
-                        GigaInt gResult = ag + (-bg);
+                        GigaInt gResult = ag * bg;
 
-                        if (progress % 1000 == 0) Console.WriteLine(progress + " tests done.");
+                        if (progress % 10000 == 0) Console.WriteLine(progress + " tests done.");
                         progress++;
 
-                       
+
                         if (new GigaInt(iResult) != gResult)
                         {
-                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i + j = {iResult}. GigaInt returned {gResult}");
+                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i * j = {iResult}. GigaInt returned {gResult}");
+                            Console.WriteLine("Press any key to continue...");
+                            Console.ReadKey();
                             failed++;
                         }
                         else passed++;
@@ -81,11 +85,11 @@ namespace GigaInteger
         #region Constructors
         public GigaInt(string Value)
         {
-            
-           
+
+
             if (Value.First() == '-')
             {
-                if(Value == "-0" || Value == "-")
+                if (Value == "-0" || Value == "-")
                 {
                     this.Value = "0";
                     Sign = 1;
@@ -180,7 +184,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Multiplication of left and right</returns>
-        public static GigaInt operator *(GigaInt a, GigaInt b) => a.Value + b.Value;
+        public static GigaInt operator *(GigaInt a, GigaInt b) => Multiply(a, b);
 
 
 
@@ -322,6 +326,8 @@ namespace GigaInteger
             }
         }
 
+
+
         /// <summary>
         /// Subtracts a GigaInt value from a GigaInt value.
         /// </summary>
@@ -382,6 +388,63 @@ namespace GigaInteger
                 return new GigaInt((isNegative ? "-" : "") + new string(chars));
             }
         }
+
+
+
+        /// <summary>
+        /// Multiplies two GigaInt value
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Left multiplied by right</returns>
+        private static GigaInt Multiply(GigaInt a, GigaInt b)
+        {
+            if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Multiply(a.Value, b.Value);
+            else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Multiply(a.Value, b.Value).ToString();
+            else
+            {
+                GigaInt result = 0;
+
+                GigaInt multiplied = a > b ? a : b;
+                GigaInt multiplier = a < b ? a : b;
+
+                string zeros = "";
+
+                for (int i = multiplier.Length - 1; i >= 0; i--)
+                {
+                    StringBuilder layerSum = new StringBuilder();
+                    int d1 = multiplier.Value[i] - '0';
+
+                    int carry = 0;
+
+                    for (int j = multiplied.Length-1; j >= 0; j--)
+                    {
+                        int d2 = multiplied.Value[j] - '0';
+                        int product = d1 * d2 + carry;
+                        int val = product % 10;
+                        carry = product / 10;
+
+                        layerSum.Insert(0,val.ToString());
+                    }
+
+                    if (multiplied.Length >= 2 || multiplied.Length >= 2)
+                    {
+                        int first = layerSum[0]-'0';
+                        layerSum.Remove(0, 1);
+                        layerSum.Insert(0, carry.ToString()+first.ToString());
+                    }
+                    else
+                    {
+                        layerSum.Insert(0,carry==0 ? "" : carry.ToString());
+                    }
+                    result += layerSum.ToString() + zeros;
+
+                    zeros += "0";
+                }
+
+                return result;
+            }
+        }
         #endregion
 
 
@@ -391,7 +454,9 @@ namespace GigaInteger
         public string StringSign => Sign == -1 ? "-" : "";
         public int intSign => Sign;
 
+        public int Length => Value.Length;
         public string AbsoluteValue => Value;
+
 
         public override bool Equals(object obj)
         {
