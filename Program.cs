@@ -9,7 +9,9 @@ namespace GigaInteger
     {
         static void Main(string[] args)
         {
-            bool DoHandTest = true;
+            bool DoHandTest = false;
+
+            int autoTestSpan = 1000;
 
             if (DoHandTest)
             {
@@ -20,8 +22,8 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"BigInteger   : ({in1})*({in2})={in1*in2}");
-                Console.WriteLine($"GigaInt      : ({n1})*({n2})={n1 * n2}");
+                Console.WriteLine($"BigInteger   : ({in1})/({in2})={in1 / in2}");
+                Console.WriteLine($"GigaInt      : ({n1})/({n2})={n1 / n2}");
 
                 Main(args);
             }
@@ -36,19 +38,21 @@ namespace GigaInteger
                 int progress = 0;
                 int passed = 0;
                 int failed = 0;
-                for (int i = -1000; i < 1000; i++)
+                for (int i = -autoTestSpan; i < autoTestSpan; i++)
                 {
-                    for (int j = -1000; j < 1000; j++)
+                    for (int j = -autoTestSpan; j < autoTestSpan; j++)
                     {
+                        if (i is 0 || j is 0) continue;
+
                         int a = i;
                         int b = j;
 
-                        int iResult = a * b;
+                        int iResult = a / b;
 
                         GigaInt ag = i;
                         GigaInt bg = j;
 
-                        GigaInt gResult = ag * bg;
+                        GigaInt gResult = ag / bg;
 
                         if (progress % 10000 == 0) Console.WriteLine(progress + " tests done.");
                         progress++;
@@ -56,9 +60,8 @@ namespace GigaInteger
 
                         if (new GigaInt(iResult) != gResult)
                         {
-                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i * j = {iResult}. GigaInt returned {gResult}");
-                            Console.WriteLine("Press any key to continue...");
-                            Console.ReadKey();
+                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i / j = {iResult}. GigaInt returned {gResult}");
+                            Console.Beep();
                             failed++;
                         }
                         else passed++;
@@ -69,6 +72,8 @@ namespace GigaInteger
         }
 
     }
+
+
     public class GigaInt
     {
 
@@ -194,18 +199,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Left divided by right</returns>
-        public static GigaInt operator /(GigaInt a, GigaInt b) => a.Value + b.Value;
-
-
-
-        /// <summary>
-        /// Raises a GigaInt to the power of another GigaInt.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns>Left raised to the power of right</returns>
-        public static GigaInt operator ^(GigaInt a, GigaInt b) => a.Value + b.Value;
-
+        public static GigaInt operator /(GigaInt a, GigaInt b) => Divide(a, b);
 
 
         /// <summary>
@@ -280,7 +274,7 @@ namespace GigaInteger
 
 
 
-        #region Methods
+        #region Private Default Methods
 
         /// <summary>
         /// Adds two GigaInts
@@ -417,25 +411,25 @@ namespace GigaInteger
 
                     int carry = 0;
 
-                    for (int j = multiplied.Length-1; j >= 0; j--)
+                    for (int j = multiplied.Length - 1; j >= 0; j--)
                     {
                         int d2 = multiplied.Value[j] - '0';
                         int product = d1 * d2 + carry;
                         int val = product % 10;
                         carry = product / 10;
 
-                        layerSum.Insert(0,val.ToString());
+                        layerSum.Insert(0, val.ToString());
                     }
 
                     if (multiplied.Length >= 2 || multiplied.Length >= 2)
                     {
-                        int first = layerSum[0]-'0';
+                        int first = layerSum[0] - '0';
                         layerSum.Remove(0, 1);
-                        layerSum.Insert(0, carry.ToString()+first.ToString());
+                        layerSum.Insert(0, carry.ToString() + first.ToString());
                     }
                     else
                     {
-                        layerSum.Insert(0,carry==0 ? "" : carry.ToString());
+                        layerSum.Insert(0, carry == 0 ? "" : carry.ToString());
                     }
                     result += layerSum.ToString() + zeros;
 
@@ -445,16 +439,93 @@ namespace GigaInteger
                 return result;
             }
         }
+
+
+
+        /// <summary>
+        /// Divides a GigaInt value by another GigaInt value.
+        /// </summary>
+        /// <param name="a">Left</param>
+        /// <param name="b">Right</param>
+        /// <returns>Left divided by right</returns>
+        /// <exception cref="DivideByZeroException">When right is 0</exception>
+        private static GigaInt Divide(GigaInt a, GigaInt b)
+        {
+            if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Divide(a.Value, b.Value).ToString();
+            else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Divide(a.Value, b.Value).ToString();
+            else
+            {
+                if (b == 0) throw new DivideByZeroException("Attempted Division by zero");
+                else if (b > a) return 0;
+                else if (a == b) return 1;
+                else
+                {
+                    string quotient = "";
+
+                    string remainder = a.Value;
+
+                    while (remainder.ToString() >= b)
+                    {
+
+                        string shortest = "";
+
+                        for (int i = 0; i < remainder.Length; i++)
+                        {
+                            shortest += remainder[i];
+
+                            string constShortest;
+                            if (shortest >= b)
+                            {
+                                constShortest = shortest;
+                                int count = 0;
+                                while (shortest >= b)
+                                {
+                                    shortest = (shortest - b).Value;
+                                    count++;
+                                }
+
+                                int zeroCount = remainder.Length - constShortest.Length;
+
+                                quotient
+                                    = quotient != "" ?
+                                    ((GigaInt)quotient + (count + (zeroCount >= 1 ? new string('0', zeroCount) : ""))).Value
+                                    : (count + (zeroCount >= 1 ? new string('0', zeroCount) : ""));
+
+
+                                remainder = (constShortest - (b * count)).Value + remainder.Substring(constShortest.Length);
+                            }
+                        }
+                    }
+
+                    return quotient;
+                }
+            }
+        }
         #endregion
 
 
+        #region Public Static Methods
+
+
+        /// <summary>
+        /// Raises a GigaInt to the power of another Gigaint
+        /// </summary>
+        /// <param name="x">x</param>
+        /// <param name="n">n</param>
+        /// <returns>x raised to the power of n</returns>
+        public static GigaInt Pow(GigaInt x,GigaInt n)
+        {
+
+        }
+
+        #endregion
 
         #region Special Methods
 
         public string StringSign => Sign == -1 ? "-" : "";
         public int intSign => Sign;
 
-        public int Length => Value.Length;
+        private int Length => Value.Length;
         public string AbsoluteValue => Value;
 
 
