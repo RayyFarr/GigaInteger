@@ -13,6 +13,8 @@ namespace GigaInteger
 
             int autoTestSpan = 1000;
 
+            bool audio = false;
+
             if (DoHandTest)
             {
                 Console.WriteLine("Write the first input: ");
@@ -22,14 +24,15 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"BigInteger   : ({in1})/({in2})={in1 / in2}");
-                Console.WriteLine($"GigaInt      : ({n1})/({n2})={n1 / n2}");
+                Console.WriteLine($"BigInteger   : ({in1})/({in2})={BigInteger.Pow(in1,int.Parse(in2.ToString()))}");
+                Console.WriteLine($"GigaInt      : ({n1})/({n2})={GigaInt.Pow(n1,n2)}");
 
                 Main(args);
             }
+
             if (!DoHandTest)
             {
-                Console.WriteLine("Press any key to start addition test");
+                Console.WriteLine("Press any key to start modulo test");
                 Console.ReadKey();
 
 
@@ -47,12 +50,12 @@ namespace GigaInteger
                         int a = i;
                         int b = j;
 
-                        int iResult = a / b;
+                        int iResult = a/b;
 
                         GigaInt ag = i;
                         GigaInt bg = j;
 
-                        GigaInt gResult = ag / bg;
+                        GigaInt gResult = ag/bg;
 
                         if (progress % 10000 == 0) Console.WriteLine(progress + " tests done.");
                         progress++;
@@ -60,8 +63,8 @@ namespace GigaInteger
 
                         if (new GigaInt(iResult) != gResult)
                         {
-                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j}. i / j = {iResult}. GigaInt returned {gResult}");
-                            Console.Beep();
+                            Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j} | i + j = {iResult}. GigaInt returned {gResult}");
+                            if(audio)Console.Beep();
                             failed++;
                         }
                         else passed++;
@@ -84,7 +87,6 @@ namespace GigaInteger
         public const int NEGATIVE = -1;
         public const int POSITIVE = 1;
         #endregion
-
 
 
         #region Constructors
@@ -131,13 +133,11 @@ namespace GigaInteger
         #endregion
 
 
-
         #region Value Setting
         public static implicit operator GigaInt(int Value) => new GigaInt(Value);
         public static implicit operator GigaInt(long Value) => new GigaInt(Value);
         public static implicit operator GigaInt(string Value) => new GigaInt(Value);
         #endregion
-
 
 
         #region Operators
@@ -201,6 +201,14 @@ namespace GigaInteger
         /// <returns>Left divided by right</returns>
         public static GigaInt operator /(GigaInt a, GigaInt b) => Divide(a, b);
 
+
+        /// <summary>
+        /// Does the modulo operation on two GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>The remainder when left is divided by right</returns>
+        public static GigaInt operator %(GigaInt a, GigaInt b) => Mod(a, b);
 
         /// <summary>
         /// Returns a value depending on the equality of two GigaInt Values
@@ -271,7 +279,6 @@ namespace GigaInteger
         /// <returns>true if left is less or equal to right else false.</returns>
         public static bool operator <=(GigaInt a, GigaInt b) => (a < b) || a == b;
         #endregion
-
 
 
         #region Private Default Methods
@@ -501,6 +508,18 @@ namespace GigaInteger
                 }
             }
         }
+
+
+
+        /// <summary>
+        /// Does Modulo operation on two GigaInts.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns>Left Mod Right A.K.A the remainder of Left divided by Right.</returns>
+        /// <exception cref="DivideByZeroException"></exception>
+        private static GigaInt Mod(GigaInt a, GigaInt b) => a - (b*Divide(a, b));
+
         #endregion
 
 
@@ -513,12 +532,26 @@ namespace GigaInteger
         /// <param name="x">x</param>
         /// <param name="n">n</param>
         /// <returns>x raised to the power of n</returns>
-        public static GigaInt Pow(GigaInt x,GigaInt n)
+        public static GigaInt Pow(GigaInt x, GigaInt n)
         {
+            if (n < 0) throw new Exception("Exponent must be non-negative!");
 
+            if ((n < 0 && x > 0) || n == 0 || x == 1) return 1;
+
+            GigaInt mult = 1;
+            while (n * n.intSign > 1)
+            {
+                if (n % 2 != 0) mult *= x;
+        
+                x *= x;
+                n /= 2;
+            }
+
+            return mult * x;
         }
 
         #endregion
+
 
         #region Special Methods
 
@@ -542,7 +575,6 @@ namespace GigaInteger
 
 
         #endregion
-
 
 
         #region Misc
