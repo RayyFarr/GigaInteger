@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Numerics;
 using System.Text;
-using System.Threading;
 
 namespace GigaInteger
 {
@@ -286,7 +285,7 @@ namespace GigaInteger
         #endregion
 
 
-        #region Private Default Methods
+        #region Public Static Methods
 
         /// <summary>
         /// Adds two GigaInts
@@ -294,7 +293,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>right added to left</returns>
-        private static GigaInt Add(GigaInt a, GigaInt b)
+        public static GigaInt Add(GigaInt a, GigaInt b)
         {
             //Checks if any of the values have a sign associated with it then it adds or subtracts the absolute value
             //Depending on the signs.
@@ -340,7 +339,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Right subtracted from Left</returns>
-        private static GigaInt Subtract(GigaInt a, GigaInt b)
+        public static GigaInt Subtract(GigaInt a, GigaInt b)
         {
             //Handles a-b.
             //a.value gives absolute.
@@ -403,7 +402,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Left multiplied by right</returns>
-        private static GigaInt Multiply(GigaInt a, GigaInt b)
+        public static GigaInt Multiply(GigaInt a, GigaInt b)
         {
             if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Multiply(a.Value, b.Value);
             else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Multiply(a.Value, b.Value).ToString();
@@ -461,7 +460,7 @@ namespace GigaInteger
         /// <param name="b">Right</param>
         /// <returns>Left divided by right</returns>
         /// <exception cref="DivideByZeroException">When right is 0</exception>
-        private static GigaInt Divide(GigaInt a, GigaInt b)
+        public static GigaInt Divide(GigaInt a, GigaInt b)
         {
             if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Divide(a.Value, b.Value).ToString();
             else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Divide(a.Value, b.Value).ToString();
@@ -523,12 +522,7 @@ namespace GigaInteger
         /// <param name="b"></param>
         /// <returns>Left Mod Right A.K.A the remainder of Left divided by Right.</returns>
         /// <exception cref="DivideByZeroException"></exception>
-        private static GigaInt Mod(GigaInt a, GigaInt b) => a - (b * Divide(a, b));
-
-        #endregion
-
-
-        #region Public Static Methods
+        public static GigaInt Mod(GigaInt a, GigaInt b) => a - (b * Divide(a, b));
 
 
         /// <summary>
@@ -554,7 +548,7 @@ namespace GigaInteger
             }
             return mult * x;
         }
-       
+
 
         /// <summary>
         /// Gets the square root of a GigaInt.
@@ -564,7 +558,7 @@ namespace GigaInteger
         public static GigaInt Sqrt(GigaInt x)
         {
             if (x <= 1) return 0;
-            
+
             GigaInt start = 0;
             GigaInt end = x / 2;
 
@@ -619,21 +613,22 @@ namespace GigaInteger
         /// Returns the value parsed to a long.
         /// </summary>
         public long LongValue => long.Parse(Sign.ToString() + Value);
-    
+
         /// <summary>
         /// Returns the absolute value of this GigaInt.
         /// </summary>
         public string AbsoluteValue => Value;
 
 
-        public override bool Equals(object obj)
-        {
-            if (obj is GigaInt gigaInt)
-            {
-                return Value == gigaInt.Value && Sign == gigaInt.Sign;
-            }
-            return false;
-        }
+        /// <summary>
+        /// Sets the sign to the sign of the input integer.
+        /// </summary>
+        /// <param name="Sign"></param>
+        public void SetSign(int Sign) => this.Sign = (short)Math.Sign(Sign);
+
+
+        public override bool Equals(object obj) => obj is GigaInt gigaInt ? Value == gigaInt.Value && Sign == gigaInt.Sign : false;
+
 
         public override int GetHashCode() => HashCode.Combine(Value, Sign);
 
