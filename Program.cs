@@ -2,18 +2,21 @@
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using System.Threading;
 
 namespace GigaInteger
 {
     internal class Program
     {
+
+
         static void Main(string[] args)
         {
-            bool DoHandTest = false;
+            bool DoHandTest = true;
 
             int autoTestSpan = 1000;
 
-            bool audio = false;
+            bool audio = true;
 
             if (DoHandTest)
             {
@@ -24,15 +27,15 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"BigInteger   : ({in1})/({in2})={BigInteger.Pow(in1,int.Parse(in2.ToString()))}");
-                Console.WriteLine($"GigaInt      : ({n1})/({n2})={GigaInt.Pow(n1,n2)}");
+                Console.WriteLine($"BigInteger   : ({in1})^({in2})={BigInteger.Pow(in1, int.Parse(in2.ToString()))}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Pow(n1, n2)}");
 
                 Main(args);
             }
 
             if (!DoHandTest)
             {
-                Console.WriteLine("Press any key to start modulo test");
+                Console.WriteLine("Press any key to start division test");
                 Console.ReadKey();
 
 
@@ -50,12 +53,12 @@ namespace GigaInteger
                         int a = i;
                         int b = j;
 
-                        int iResult = a/b;
+                        int iResult = a / b;
 
                         GigaInt ag = i;
                         GigaInt bg = j;
 
-                        GigaInt gResult = ag/bg;
+                        GigaInt gResult = ag / bg;
 
                         if (progress % 10000 == 0) Console.WriteLine(progress + " tests done.");
                         progress++;
@@ -64,7 +67,7 @@ namespace GigaInteger
                         if (new GigaInt(iResult) != gResult)
                         {
                             Console.WriteLine($"WRONG OUTPUT. i = {i},j = {j} | i + j = {iResult}. GigaInt returned {gResult}");
-                            if(audio)Console.Beep();
+                            if (audio) Console.Beep();
                             failed++;
                         }
                         else passed++;
@@ -81,11 +84,13 @@ namespace GigaInteger
     {
 
         #region Variables
+
         private string Value { get; set; }
         public short Sign { get; set; }
 
         public const int NEGATIVE = -1;
         public const int POSITIVE = 1;
+
         #endregion
 
 
@@ -518,7 +523,7 @@ namespace GigaInteger
         /// <param name="b"></param>
         /// <returns>Left Mod Right A.K.A the remainder of Left divided by Right.</returns>
         /// <exception cref="DivideByZeroException"></exception>
-        private static GigaInt Mod(GigaInt a, GigaInt b) => a - (b*Divide(a, b));
+        private static GigaInt Mod(GigaInt a, GigaInt b) => a - (b * Divide(a, b));
 
         #endregion
 
@@ -536,18 +541,53 @@ namespace GigaInteger
         {
             if (n < 0) throw new Exception("Exponent must be non-negative!");
 
-            if ((n < 0 && x > 0) || n == 0 || x == 1) return 1;
-
+            if (n == 0 || x == 1) return 1;
+            int count = 0;
             GigaInt mult = 1;
-            while (n * n.intSign > 1)
+            while (n > 1)
             {
+                count++;
                 if (n % 2 != 0) mult *= x;
-        
+
                 x *= x;
                 n /= 2;
             }
-
             return mult * x;
+        }
+       
+
+        /// <summary>
+        /// Gets the square root of a GigaInt.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns>The square root of x</returns>
+        public static GigaInt Sqrt(GigaInt x)
+        {
+            if (x <= 1) return 0;
+            
+            GigaInt start = 0;
+            GigaInt end = x / 2;
+
+            GigaInt mid;
+
+            while (start < end)
+            {
+                mid = (start + end) / 2;
+
+                if (mid * mid < x)
+                {
+                    start = mid + 1;
+                    if (start * start > x) return mid;
+                    else if (start * start == x) return start;
+                }
+                else if (mid * mid < x)
+                {
+                    end = mid - 1;
+                    if (end * end <= x) return end;
+                }
+                else return mid;
+            }
+            return start;
         }
 
         #endregion
@@ -555,10 +595,34 @@ namespace GigaInteger
 
         #region Special Methods
 
+        /// <summary>
+        /// Returns the sign of the value "-1" if negative "1" if positive.
+        /// </summary>
         public string StringSign => Sign == -1 ? "-" : "";
-        public int intSign => Sign;
 
+        /// <summary>
+        /// Returns the sign of the value -1 if negative 1 if positive.
+        /// </summary>
+        public int IntSign => Sign;
+
+        /// <summary>
+        /// Returns the length of the absolute value.
+        /// </summary>
         private int Length => Value.Length;
+
+
+        /// <summary>
+        /// Returns the value parsed to an int.
+        /// </summary>
+        public int IntValue => int.Parse(Sign.ToString() + Value);
+        /// <summary>
+        /// Returns the value parsed to a long.
+        /// </summary>
+        public long LongValue => long.Parse(Sign.ToString() + Value);
+    
+        /// <summary>
+        /// Returns the absolute value of this GigaInt.
+        /// </summary>
         public string AbsoluteValue => Value;
 
 
