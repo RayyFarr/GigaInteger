@@ -596,11 +596,7 @@ namespace GigaInteger
                 throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
 
             int i = 0;
-            while (x > 1)
-            {
-                i++;
-                x /= 10;
-            }
+            while ((x/=10) >= 1) i++;
             return i;
         }
 
@@ -626,11 +622,8 @@ namespace GigaInteger
             
             int i = 0;
 
-            while(x > 1)
-            {
-                x /= n;
-                if (x >= 1) i++;
-            }
+            while ((x/=n) >= 1) i++;
+
             return i;
         }
         #endregion
