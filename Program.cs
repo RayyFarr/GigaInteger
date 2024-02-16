@@ -26,8 +26,8 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"BigInteger   : ({in1})^({in2})={BigInteger.Pow(in1, int.Parse(in2.ToString()))}");
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Pow(n1, n2)}");
+                Console.WriteLine($"BigInteger   : ({in1})^({in2})={BigInteger.Log(in1, int.Parse(in2.ToString()))}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Log(n1, n2)}");
 
                 Main(args);
             }
@@ -583,7 +583,56 @@ namespace GigaInteger
             }
             return start;
         }
+        
 
+        /// <summary>
+        /// A method to get the Log of GigaInt.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns>The Base-10 Logarithm of the x</returns>
+        public static GigaInt Log10(GigaInt x)
+        {
+            if (x <= 0)
+                throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
+
+            int i = 0;
+            while (x > 1)
+            {
+                i++;
+                x /= 10;
+            }
+            return i;
+        }
+
+
+        /// <summary>
+        /// Gets the log of a GigaInt value.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n"></param>
+        /// <returns>The Base-n log of x</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArithmeticException"></exception>
+
+        public static GigaInt Log(GigaInt x,GigaInt n)
+        {
+            //Exception handling.
+            if(x < 0)
+                throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
+            else if (n <= 1)
+                throw new ArgumentException("GigaInt does not support logarithms with the base equal or less than 1.");
+            
+            
+            
+            int i = 0;
+
+            while(x > 1)
+            {
+                x /= n;
+                if (x >= 1) i++;
+            }
+            return i;
+        }
         #endregion
 
 
