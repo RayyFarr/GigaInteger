@@ -287,6 +287,8 @@ namespace GigaInteger
 
         #region Public Static Methods
 
+
+
         /// <summary>
         /// Adds two GigaInts
         /// </summary>
@@ -617,13 +619,9 @@ namespace GigaInteger
                 throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
             else if (n <= 1)
                 throw new ArgumentException("GigaInt does not support logarithms with the base equal or less than 1.");
-            
-            
-            
+                             
             int i = 0;
-
             while ((x/=n) >= 1) i++;
-
             return i;
         }
         #endregion
@@ -661,6 +659,10 @@ namespace GigaInteger
         /// </summary>
         public string AbsoluteValue => Value;
 
+        /// <summary>
+        /// Represents the GigaInt value 1.
+        /// </summary>
+        public static GigaInt One => 1;
 
         /// <summary>
         /// Sets the sign to the sign of the input integer.
