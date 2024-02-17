@@ -26,8 +26,8 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
 
-                Console.WriteLine($"BigInteger   : ({in1})^({in2})={BigInteger.Log(in1, int.Parse(in2.ToString()))}");
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Log(n1, n2)}");
+                Console.WriteLine($"BigInteger   : ({in1})^({in2})={BigInteger.GreatestCommonDivisor(in1, in2)}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.GCD(n1, n2)}");
 
                 Main(args);
             }
@@ -527,6 +527,7 @@ namespace GigaInteger
         public static GigaInt Mod(GigaInt a, GigaInt b) => a - (b * Divide(a, b));
 
 
+
         /// <summary>
         /// Raises a GigaInt to the power of another Gigaint
         /// </summary>
@@ -550,6 +551,7 @@ namespace GigaInteger
             }
             return mult * x;
         }
+
 
 
         /// <summary>
@@ -585,7 +587,8 @@ namespace GigaInteger
             }
             return start;
         }
-        
+
+
 
         /// <summary>
         /// A method to get the Log of GigaInt.
@@ -598,9 +601,10 @@ namespace GigaInteger
                 throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
 
             int i = 0;
-            while ((x/=10) >= 1) i++;
+            while ((x /= 10) >= 1) i++;
             return i;
         }
+
 
 
         /// <summary>
@@ -611,18 +615,32 @@ namespace GigaInteger
         /// <returns>The Base-n log of x</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArithmeticException"></exception>
-
-        public static GigaInt Log(GigaInt x,GigaInt n)
+        public static GigaInt Log(GigaInt x, GigaInt n)
         {
             //Exception handling.
-            if(x < 0)
+            if (x < 0)
                 throw new ArithmeticException("Cannot compute the logarithm of a negative number or zero.");
             else if (n <= 1)
                 throw new ArgumentException("GigaInt does not support logarithms with the base equal or less than 1.");
-                             
+
             int i = 0;
-            while ((x/=n) >= 1) i++;
+            while ((x /= n) >= 1) i++;
             return i;
+        }
+
+
+
+        /// <summary>
+        /// A method to get the greatest common divisor of two GigaInt values.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns>The Greatest Common Divisor of left and right.</returns>
+        public static GigaInt GCD(GigaInt left, GigaInt right)
+        {
+            for (int i = 1; i <= right; i++)
+                if (i % left == 0 || i % right == 0) return new GigaInt(i).Value;
+            return left>right?left:right;
         }
         #endregion
 
@@ -660,9 +678,23 @@ namespace GigaInteger
         public string AbsoluteValue => Value;
 
         /// <summary>
+        /// Represents the GigaInt value zero.
+        /// </summary>
+        public static GigaInt Zero => 0;
+
+
+        /// <summary>
         /// Represents the GigaInt value 1.
         /// </summary>
         public static GigaInt One => 1;
+
+
+        /// <summary>
+        /// Represents the GigaInt value -1.
+        /// </summary>
+        public static GigaInt MinusOne => 2;
+
+
 
         /// <summary>
         /// Sets the sign to the sign of the input integer.
