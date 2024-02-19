@@ -651,6 +651,13 @@ namespace GigaInteger
 
 
         /// <summary>
+        /// Gets the Greatest Common Divisior of many GigaInt values.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>The Greatest common divisor of the GigaInt parameters</returns>
+        public static GigaInt GCD(params GigaInt[] values) => values.Aggregate(GCD);
+
+        /// <summary>
         /// Gets The least common multiple of two guga
         /// </summary>
         /// <param name="left"></param>
