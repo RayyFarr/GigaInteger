@@ -650,12 +650,15 @@ namespace GigaInteger
         }
 
 
+
         /// <summary>
         /// Gets the Greatest Common Divisior of many GigaInt values.
         /// </summary>
         /// <param name="values"></param>
         /// <returns>The Greatest common divisor of the GigaInt parameters</returns>
         public static GigaInt GCD(params GigaInt[] values) => values.Aggregate(GCD);
+
+
 
         /// <summary>
         /// Gets The least common multiple of two guga
@@ -666,6 +669,13 @@ namespace GigaInteger
         /// <exception cref="DivideByZeroException"></exception>
         public static GigaInt LCM(GigaInt left,GigaInt right) => (left/GCD(left,right)) * right;
 
+
+        /// <summary>
+        /// Gets the least common multiple of many GigaInt values.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>The least common multiple of the GigaInt parameters.</returns>
+        public static GigaInt LCM(params GigaInt[] values) => values.Aggregate(LCM);
         #endregion
 
 
