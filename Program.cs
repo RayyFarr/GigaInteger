@@ -27,7 +27,8 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 BigInteger in2 = BigInteger.Parse(n2.ToString());
                 
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.LCM(n1, n2)}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Add(n1, n2)}");
+                Console.WriteLine($"BigInteger      : ({in1})^({in2})={BigInteger.Add(in1, in2)}");
 
                 Main(args);
             }
@@ -285,7 +286,7 @@ namespace GigaInteger
         #endregion
 
 
-        #region Public Static Methods
+        #region Static Methods
 
 
 
@@ -295,7 +296,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>right added to left</returns>
-        public static GigaInt Add(GigaInt a, GigaInt b)
+        private static GigaInt Add(GigaInt a, GigaInt b)
         {
             //Checks if any of the values have a sign associated with it then it adds or subtracts the absolute value
             //Depending on the signs.
@@ -334,6 +335,13 @@ namespace GigaInteger
         }
 
 
+        /// <summary>
+        /// Adds many GigaInt values
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>Addition of all input parameters</returns>
+        public static GigaInt Add(params GigaInt[] values) => values.Aggregate(Add);
+
 
         /// <summary>
         /// Subtracts a GigaInt value from a GigaInt value.
@@ -341,7 +349,7 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns>Right subtracted from Left</returns>
-        public static GigaInt Subtract(GigaInt a, GigaInt b)
+        private static GigaInt Subtract(GigaInt a, GigaInt b)
         {
             //Handles a-b.
             //a.value gives absolute.
@@ -397,14 +405,21 @@ namespace GigaInteger
         }
 
 
+        /// <summary>
+        /// Subtracts many GigaInt values.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>Subtraction of all input parameters from left to right</returns>
+        public static GigaInt Subtract(params GigaInt[] values) => values.Aggregate(Subtract);
+
 
         /// <summary>
-        /// Multiplies two GigaInt value
+        /// Multiplies two GigaInt values.
         /// </summary>
         /// <param name="a"></param>
         /// <param name="b"></param>
-        /// <returns>Left multiplied by right</returns>
-        public static GigaInt Multiply(GigaInt a, GigaInt b)
+        /// <returns>Left multiplied by right.</returns>
+        private static GigaInt Multiply(GigaInt a, GigaInt b)
         {
             if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Multiply(a.Value, b.Value);
             else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Multiply(a.Value, b.Value).ToString();
@@ -454,6 +469,13 @@ namespace GigaInteger
         }
 
 
+        /// <summary>
+        /// Multiplies many GigaInt values.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>The input parameters multiplied from left to right.</returns>
+        public static GigaInt Multiply(params GigaInt[] values) => values.Aggregate(Multiply);
+
 
         /// <summary>
         /// Divides a GigaInt value by another GigaInt value.
@@ -462,7 +484,7 @@ namespace GigaInteger
         /// <param name="b">Right</param>
         /// <returns>Left divided by right</returns>
         /// <exception cref="DivideByZeroException">When right is 0</exception>
-        public static GigaInt Divide(GigaInt a, GigaInt b)
+        private static GigaInt Divide(GigaInt a, GigaInt b)
         {
             if (a.Sign is NEGATIVE && b.Sign is NEGATIVE) return Divide(a.Value, b.Value).ToString();
             else if (a.Sign is NEGATIVE || b.Sign is NEGATIVE) return "-" + Divide(a.Value, b.Value).ToString();
@@ -516,6 +538,13 @@ namespace GigaInteger
         }
 
 
+        /// <summary>
+        /// Divides many GigaInt values from left to right.
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns>The division of all input parameters from left to right.</returns>
+        public static GigaInt Divide(params GigaInt[] values) => values.Aggregate(Divide);
+     
 
         /// <summary>
         /// Does Modulo operation on two GigaInts.
