@@ -29,7 +29,7 @@ namespace GigaInteger
                 
                 Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Add(n1, n2)}");
                 Console.WriteLine($"BigInteger      : ({in1})^({in2})={BigInteger.Add(in1, in2)}");
-
+                
                 Main(args);
             }
 
@@ -159,6 +159,15 @@ namespace GigaInteger
 
 
         /// <summary>
+        /// Increments a GigaInt value by one.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns>The GigaInt value incremented by one</returns>
+        public static GigaInt operator ++(GigaInt a) => a+=1;
+
+
+
+        /// <summary>
         /// Multiplies a Value by +1.
         /// </summary>
         /// <param name="a"></param>
@@ -175,6 +184,14 @@ namespace GigaInteger
         /// <returns>Negation of right from left</returns>
         public static GigaInt operator -(GigaInt a, GigaInt b) => Subtract(a, b);
 
+
+
+        /// <summary>
+        /// Decrements a GigaInt value by one.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns>The GigaInt value Decremented by one</returns>
+        public static GigaInt operator --(GigaInt a) => a-=1;
 
 
         /// <summary>
@@ -725,6 +742,30 @@ namespace GigaInteger
         /// </summary>
         private int Length => Value.Length;
 
+        /// <summary>
+        /// Returns true if the value of this is even.
+        /// </summary>
+        public bool IsEven => this % 2 == 0;
+
+        /// <summary>
+        /// Returns true if the value of this GigaInt is Zero.
+        /// </summary>
+        public bool IsZero => this == 0;
+
+        /// <summary>
+        /// Returns true if the value of this GigaInt is one.
+        /// </summary>
+        public bool IsOne => this == 1;
+
+        /// <summary>
+        /// Returns true if the value of this GigaInt is negative.
+        /// </summary>
+        public bool IsNegative => this < 0;
+
+        /// <summary>
+        /// Returns true if the value of this GigaInt is positive.
+        /// </summary>
+        public bool IsPositive => this > 0;
 
         /// <summary>
         /// Returns the value parsed to an int.
@@ -734,11 +775,12 @@ namespace GigaInteger
         /// Returns the value parsed to a long.
         /// </summary>
         public long LongValue => long.Parse(Sign.ToString() + Value);
-
         /// <summary>
         /// Returns the absolute value of this GigaInt.
         /// </summary>
         public string AbsoluteValue => Value;
+
+
 
         /// <summary>
         /// Represents the GigaInt value zero.
