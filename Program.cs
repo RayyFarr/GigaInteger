@@ -26,12 +26,11 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 int in2 = n2.IntValue;
 
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.NthRoot(n1, n2)}");
-                Console.WriteLine($"BigInteger      : ({in1})^({in2})={(int)Math.Pow(in1, 1/(double)in2)}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Max(n1, n2,1000)}");
+                Console.WriteLine($"BigInteger      : ({in1})^({in2})={Math.Max(in1, in2)}");
 
                 Main(args);
             }
-
             if (!DoHandTest)
             {
                 Console.WriteLine("Press any key to start division test");
@@ -91,7 +90,7 @@ namespace GigaInteger
         public const int POSITIVE = 1;
 
         #endregion
-
+        
 
         #region Constructors
         public GigaInt(string Value)
@@ -756,6 +755,24 @@ namespace GigaInteger
         /// <param name="values"></param>
         /// <returns>The least common multiple of the GigaInt parameters.</returns>
         public static GigaInt LCM(params GigaInt[] values) => values.Aggregate(LCM);
+
+
+        /// <summary>
+        /// Gets the Larger one of two GigaInts.
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns>The largest input GigaInt</returns>
+        private static GigaInt Max(GigaInt n1,GigaInt n2) => (n1 > n2) ? n1 : n2;
+
+
+        /// <summary>
+        /// Gets the largest GigaInt of many GigaInts.
+        /// </summary>
+        /// <param name="gigaInts"></param>
+        /// <returns>The largest GigaInt of input GigaInts.</returns>
+        public static GigaInt Max(params GigaInt[] gigaInts) => gigaInts.Aggregate(Max);
+
         #endregion
 
 
