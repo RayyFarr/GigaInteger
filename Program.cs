@@ -773,6 +773,23 @@ namespace GigaInteger
         /// <returns>The largest GigaInt of input GigaInts.</returns>
         public static GigaInt Max(params GigaInt[] gigaInts) => gigaInts.Aggregate(Max);
 
+        
+        /// <summary>
+        /// Gets the smallest one of two GigaInts.
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns>The smallest input GigaInt</returns>
+        public static GigaInt Min(GigaInt n1,GigaInt n2) => (n1< n2) ? n1 : n2;
+
+
+
+        /// <summary>
+        /// Gets the smallest GigaInt of many GigaInts.
+        /// </summary>
+        /// <param name="gigaInts"></param>
+        /// <returns>The smallest GigaInt of input GigaInts.</returns>
+        public static GigaInt Min(params GigaInt[] gigaInts) => gigaInts.Aggregate(Min);
         #endregion
 
 
