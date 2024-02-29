@@ -26,7 +26,7 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 int in2 = n2.IntValue;
 
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.NRoot(n1, n2)}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.NthRoot(n1, n2)}");
                 Console.WriteLine($"BigInteger      : ({in1})^({in2})={(int)Math.Pow(in1, 1/(double)in2)}");
 
                 Main(args);
@@ -634,8 +634,13 @@ namespace GigaInteger
         }
 
 
-
-        public static GigaInt NRoot(GigaInt x, GigaInt n)
+        /// <summary>
+        /// Gets the nth-root of a number.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="n"></param>
+        /// <returns>nth root of x or x to the power of 1/n</returns>
+        public static GigaInt NthRoot(GigaInt x, GigaInt n)
         {
             if (x <= 1 || n <= 1) return 0;
 
