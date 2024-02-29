@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -22,14 +21,14 @@ namespace GigaInteger
             {
                 Console.WriteLine("Write the first input: ");
                 GigaInt n1 = Console.ReadLine();
-                BigInteger in1 = BigInteger.Parse(n1.ToString());
+                int in1 = n1.IntValue;
                 Console.WriteLine("Write the second input: ");
                 GigaInt n2 = Console.ReadLine();
-                BigInteger in2 = BigInteger.Parse(n2.ToString());
-                
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Add(n1, n2)}");
-                Console.WriteLine($"BigInteger      : ({in1})^({in2})={BigInteger.Add(in1, in2)}");
-                
+                int in2 = n2.IntValue;
+
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.NRoot(n1, n2)}");
+                Console.WriteLine($"BigInteger      : ({in1})^({in2})={(int)Math.Pow(in1, 1/(double)in2)}");
+
                 Main(args);
             }
 
@@ -163,7 +162,7 @@ namespace GigaInteger
         /// </summary>
         /// <param name="a"></param>
         /// <returns>The GigaInt value incremented by one</returns>
-        public static GigaInt operator ++(GigaInt a) => a+=1;
+        public static GigaInt operator ++(GigaInt a) => a += 1;
 
 
 
@@ -191,7 +190,7 @@ namespace GigaInteger
         /// </summary>
         /// <param name="a"></param>
         /// <returns>The GigaInt value Decremented by one</returns>
-        public static GigaInt operator --(GigaInt a) => a-=1;
+        public static GigaInt operator --(GigaInt a) => a -= 1;
 
 
         /// <summary>
@@ -561,7 +560,7 @@ namespace GigaInteger
         /// <param name="values"></param>
         /// <returns>The division of all input parameters from left to right.</returns>
         public static GigaInt Divide(params GigaInt[] values) => values.Aggregate(Divide);
-     
+
 
         /// <summary>
         /// Does Modulo operation on two GigaInts.
@@ -624,7 +623,7 @@ namespace GigaInteger
                     if (start * start > x) return mid;
                     else if (start * start == x) return start;
                 }
-                else if (mid * mid < x)
+                else if (mid * mid > x)
                 {
                     end = mid - 1;
                     if (end * end <= x) return end;
@@ -634,6 +633,36 @@ namespace GigaInteger
             return start;
         }
 
+
+
+        public static GigaInt NRoot(GigaInt x, GigaInt n)
+        {
+            if (x <= 1 || n <= 1) return 0;
+
+            GigaInt start = 0;
+            GigaInt end = x / 2;
+
+            GigaInt mid;
+
+            while (start < end)
+            {
+                mid = (start + end) / 2;
+
+                if (Pow(mid, n) < x)
+                {
+                    start = mid + 1;
+                    if (Pow(start, n) > x) return mid;
+                    else if (Pow(start, n) == x) return start;
+                }
+                else if (Pow(mid, n) > x)
+                {
+                    end = mid - 1;
+                    if (Pow(end, n) <= x) return end;
+                }
+                else return mid;
+            }
+            return start;
+        }
 
 
         /// <summary>
@@ -686,7 +715,7 @@ namespace GigaInteger
         public static GigaInt GCD(GigaInt left, GigaInt right)
         {
             if (left == 0 && right == 0) throw new DivideByZeroException();
-            while(right != 0)
+            while (right != 0)
             {
                 GigaInt temp = right;
                 right = left % right;
@@ -713,7 +742,7 @@ namespace GigaInteger
         /// <param name="right"></param>
         /// <returns>The Least common multiple of left and right</returns>
         /// <exception cref="DivideByZeroException"></exception>
-        public static GigaInt LCM(GigaInt left,GigaInt right) => (left/GCD(left,right)) * right;
+        public static GigaInt LCM(GigaInt left, GigaInt right) => (left / GCD(left, right)) * right;
 
 
         /// <summary>
@@ -770,7 +799,7 @@ namespace GigaInteger
         /// <summary>
         /// Returns the value parsed to an int.
         /// </summary>
-        public int IntValue => int.Parse(Sign.ToString() + Value);
+        public int IntValue => int.Parse((Sign == 1?"":"-") + Value);
         /// <summary>
         /// Returns the value parsed to a long.
         /// </summary>
