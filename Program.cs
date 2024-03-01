@@ -26,9 +26,8 @@ namespace GigaInteger
                 GigaInt n2 = Console.ReadLine();
                 int in2 = n2.IntValue;
 
-                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Max(n1, n2,1000)}");
+                Console.WriteLine($"GigaInt      : ({n1})^({n2})={GigaInt.Factorial(n1)}");
                 Console.WriteLine($"BigInteger      : ({in1})^({in2})={Math.Max(in1, in2)}");
-
                 Main(args);
             }
             if (!DoHandTest)
@@ -758,6 +757,21 @@ namespace GigaInteger
 
 
         /// <summary>
+        /// Gets the factorial of a GigaInt number.
+        /// Caution:Values above 2000 may take significant time.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <returns>The factorial of a GigaInt value</returns>
+        /// <exception cref="ArithmeticException"></exception>
+        public static GigaInt Factorial(GigaInt a)
+        {
+            if (a.Sign is NEGATIVE) throw new ArithmeticException("Cannot compute the factorial of a negative number.");
+            GigaInt result = 1;      
+            for(GigaInt i = 1; i <= a; i++) result *= i;
+            return result;
+        }
+
+        /// <summary>
         /// Gets the Larger one of two GigaInts.
         /// </summary>
         /// <param name="n1"></param>
@@ -781,7 +795,6 @@ namespace GigaInteger
         /// <param name="n2"></param>
         /// <returns>The smallest input GigaInt</returns>
         public static GigaInt Min(GigaInt n1,GigaInt n2) => (n1< n2) ? n1 : n2;
-
 
 
         /// <summary>
