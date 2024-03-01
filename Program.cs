@@ -763,11 +763,11 @@ namespace GigaInteger
         /// <param name="a"></param>
         /// <returns>The factorial of a GigaInt value</returns>
         /// <exception cref="ArithmeticException"></exception>
-        public static GigaInt Factorial(GigaInt a)
+        public static GigaInt Factorial(GigaInt n)
         {
-            if (a.Sign is NEGATIVE) throw new ArithmeticException("Cannot compute the factorial of a negative number.");
+            if (n.Sign is NEGATIVE) throw new ArithmeticException("Cannot compute the factorial of a negative number.");
             GigaInt result = 1;      
-            for(GigaInt i = 1; i <= a; i++) result *= i;
+            for(GigaInt i = 1; i <= n; i++) result *= i;
             return result;
         }
 
